@@ -4,6 +4,7 @@ import json
 
 from docido_sdk.toolbox.file_ext import iterator_to_file
 from docido_sdk.toolbox.http_ext import delayed_request
+from docido_sdk.index.test import CustomJSONEncoder
 
 
 class TestStreamFromRequest(unittest.TestCase):
@@ -11,6 +12,17 @@ class TestStreamFromRequest(unittest.TestCase):
         s = delayed_request('http://google.com')
         json.dumps(repr(s))
         pickle.dumps(s)
+
+    def test_json(self):
+        s = delayed_request('http://google.com', param=dict(test='test'))
+        self.assertEqual(
+            json.dumps('Test'),
+            json.dumps('Test', cls=CustomJSONEncoder)
+        )
+        self.assertEqual(
+            '"{\\"param\\": {\\"test\\": \\"test\\"}}"',
+            json.dumps(s, cls=CustomJSONEncoder)
+        )
 
     def test_fetch_google(self):
         with delayed_request('http://google.com').open() as istr:
