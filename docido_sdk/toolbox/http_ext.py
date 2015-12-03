@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 
 import requests
+import json
 
 
 __all__ = [
@@ -54,3 +55,6 @@ class delayed_request(object):
             yield resp
         finally:
             resp.close()
+
+    def __repr__(self):
+        return json.dumps(self.__kwargs)

@@ -19,9 +19,17 @@ from .api import (
 )
 from .errors import IndexAPIError
 from docido_sdk.toolbox.decorators import reraise
+from docido_sdk.toolbox.http_ext import delayed_request
 
 
 reraise = reraise(IndexAPIError)
+
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, delayed_request):
+            return repr(obj)
+        return repr(obj)
 
 
 class LocalKVProcessor(IndexAPIProcessor):
@@ -83,7 +91,7 @@ class LocalKVProcessor(IndexAPIProcessor):
 
     def __persist(self):
         with open(self.__path + '.new', 'w') as ostr:
-            json.dump(self.__store, ostr, indent=2)
+            json.dump(self.__store, ostr, indent=2, cls=CustomJSONEncoder)
         shutil.move(self.__path + '.new', self.__path)
 
 
@@ -236,7 +244,7 @@ class LocalDumbIndexProcessor(IndexAPIProcessor):
     @classmethod
     def persist_index(cls, index, path):
         with open(path + '.new', 'w') as ostr:
-            json.dump(index, ostr, indent=2)
+            json.dump(index, ostr, indent=2, cls=CustomJSONEncoder)
         shutil.move(path + '.new', path)
 
 
