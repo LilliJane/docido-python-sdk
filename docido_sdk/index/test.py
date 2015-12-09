@@ -29,7 +29,7 @@ class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, delayed_request):
             return repr(obj)
-        return json.JSONEncoder.default(self, obj)
+        return repr(obj)
 
 
 class LocalKVProcessor(IndexAPIProcessor):
